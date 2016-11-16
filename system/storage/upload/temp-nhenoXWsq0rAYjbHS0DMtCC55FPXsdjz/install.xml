@@ -1,0 +1,36 @@
+<modification>
+	<name>Export/Import Tool for OpenCart 2.0.x</name>
+	<code>Export/Import Tool for OpenCart 2.0.x</code>
+	<version>2.0.x-2.19</version>
+	<author>mhccorp.com</author>
+	<file path="admin/controller/common/menu.php">
+		<operation>
+			<search><![CDATA[$data['text_backup'] = $this->language->get('text_backup');]]></search>
+			<add position="after"><![CDATA[
+		$data['text_export_import'] = $this->language->get('text_export_import');
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[$data['backup'] = $this->url->link('tool/backup', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+			<add position="after"><![CDATA[
+		$data['export_import'] = $this->url->link('tool/export_import', 'token=' . $this->session->data['token'], 'SSL');
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/language/*/common/menu.php">
+		<operation>
+			<search><![CDATA[$_['text_backup']                      = 'Backup / Restore';]]></search>
+			<add position="after"><![CDATA[
+$_['text_export_import']               = 'Export / Import';
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/view/template/common/menu.tpl">
+		<operation>
+			<search><![CDATA[<li><a href="<?php echo $backup; ?>"><?php echo $text_backup; ?></a></li>]]></search>
+			<add position="after"><![CDATA[
+      <li><a href="<?php echo $export_import; ?>"><?php echo $text_export_import; ?></a></li>
+			]]></add>
+		</operation>
+	</file>
+</modification>

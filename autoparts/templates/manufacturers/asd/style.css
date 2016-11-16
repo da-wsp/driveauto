@@ -1,0 +1,61 @@
+.tbcars{background-image:url(images/cars.png); background-repeat:no-repeat; background-position:14px 6px; padding:10px 20px 10px 70px!important;}
+.tbtracks{background-image:url(images/tracks.png); background-repeat:no-repeat; background-position:14px 6px; padding:10px 20px 10px 70px!important;}
+.tbcars:focus {border:0px!important; box-shadow:none!important; outline:#ffffff solid 0px!important;}
+.tbtracks:focus {border:0px!important; box-shadow:none!important; outline:#ffffff solid 0px!important;}
+#tabs{background:none!important; border:0px!important; padding:0px!important;}
+#tabs ul{background:none!important; border-left:0px!important; border-top:0px!important; border-right:0px!important; }
+
+.tdmbut{	
+	float:left; display:block; 
+	color:#464646!important; 
+	width:205px; height:50px; 
+	padding:0px; 
+	margin:0px 5px 10px 5px; 
+	background:#ffffff url(images/butlogo.png) left bottom repeat-x!important; 
+	vertical-align:middle!important; 
+	text-decoration:none!important;  
+	box-shadow:inset 0 0 0 1px #ffffff, 0 0 0 1px #d1d1d1; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;}
+.tdmbut:hover{
+	color:#005c9d!important; 
+	background:#ffffff url(images/butlogo_hover.png) left top repeat-x!important; 
+	box-shadow:inset 0 0 0 1px #ffffff, 0 0 0 1px #d1d1d1, 0px 0px 6px #689aff;
+}
+.tdmbut-logo{
+	width:36px; height:50px; 
+	float:left; 
+	margin:0px 12px 0px 10px; 
+	background-position:50% 50%!important; 
+	background-repeat:no-repeat!important; 
+	vertical-align:middle!important;
+}
+.tdmbut-text{
+	height:50px!important; width:110px!important; 
+	display:table-cell; 
+	vertical-align:middle!important; 
+	overflow:hidden; 
+	font-size:13px!important; 
+	text-shadow:0px 0px 3px #ffffff;
+}
+
+.fav_logo{
+	display:block; float:left; width:100px; height:100px; background-position:5px 5px!important; background-repeat:no-repeat!important;
+	margin:0px 8px 20px 8px; padding:0px; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
+}
+.fav_logo:hover{background-color:#f7f7f7!important; box-shadow:inset 0 0 0 1px #ffffff, 0 0 0 1px #d1d1d1, 0px 0px 6px #689aff;}
+.fav_logo .tdmbut-text{display:none;}
+
+.carsfilter{margin:0 0 10px; overflow: hidden; }
+.carsfilter a, #countries-table tr{
+	transition: background-color 0.3s ease-in-out;
+	-moz-transition: background-color 0.3s ease-in-out;
+	-webkit-transition: background-color 0.3s ease-in-out;
+}
+.carsfilter a{color:#757575!important; font-family:Arial;
+	background: url("images/filterbg.png") no-repeat 0 0px;
+	width: 36px; float: left; color: #686867; cursor: pointer; height: 35px; margin-top: 2px; font-size: 12px;
+	font-weight: bold; text-align: center; line-height: 34px; text-shadow: 0 1px 0 white; text-decoration: none; background-color: #F1F1F1;
+}
+.carsfilter a.first{border-radius: 3px 0 0 3px;}
+.carsfilter a.last{border-right: 1px solid silver; border-radius: 0 3px 3px 0;}
+.carsfilter a:hover{background-position: -36px;}
+.carsfilter a.active {background-position: -72px;}

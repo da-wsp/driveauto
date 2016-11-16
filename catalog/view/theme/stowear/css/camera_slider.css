@@ -1,0 +1,128 @@
+.camera_wrap {
+	margin: 30px 0px 0px 0px !important;
+	width: auto;
+	direction: ltr;
+	display: none;
+	position: relative;
+	z-index: 1;
+}
+
+	#slider .fullwidth .camera_wrap {
+		margin: 0px !important;
+		padding: 0px;
+	}
+	
+	.camera_wrap img {
+		display: block;
+	}
+
+		.camera_wrap .owl-controls .owl-buttons {
+		}
+		
+			.camera_wrap .owl-controls .owl-buttons .owl-prev {
+				position: absolute;
+				left: 0;
+				top: 50%;
+				display: none;
+				height: 60px;
+				width: 60px;
+				margin: -30px 0px 0px 0px;
+				text-indent: -10000px;
+			}
+			
+			.camera_wrap .owl-controls .owl-buttons .owl-next {
+				display: none;
+				position: absolute;
+				right: 0;
+				top: 50%;
+				height: 60px;
+				width: 60px;
+				margin: -30px 0px 0px 0px;
+				text-indent: -10000px;
+			}
+			
+				.camera_wrap .owl-controls .owl-buttons .owl-next:before,
+				.camera_wrap .owl-controls .owl-buttons .owl-prev:before {
+					position: absolute;
+					content: '';
+					width: 60px;
+					height: 60px;
+					background: #494b56;
+					opacity: 0.1;
+					-webkit-transition: opacity 0.4s;
+					-moz-transition: opacity 0.4s;
+					-o-transition: opacity 0.4s;
+					transition: opacity 0.4s;
+					top: 0;
+					left: 0;
+				}
+				
+				.camera_wrap .owl-controls .owl-buttons .owl-next:after,
+				.camera_wrap .owl-controls .owl-buttons .owl-prev:after {
+					position: absolute;
+					content: '';
+					background: url(../img/right-slider.png) no-repeat center;	
+					display: block;
+					height: 60px;
+					width: 60px;
+					-webkit-transform: rotate(0deg);
+					-webkit-transition-timing-function: ease-out;
+					-webkit-transition-duration: 300ms;
+					-moz-transform: rotate(0deg);
+					-moz-transition-timing-function: ease-out;
+					-moz-transition-duration: 300ms;
+					z-index: 1;
+					top: 0;
+					left: 0;
+				}
+				
+					.camera_wrap .owl-controls .owl-buttons .owl-prev:after {
+						background: url(../img/left-slider.png) no-repeat center;
+					}
+					
+					.camera_wrap .owl-controls .owl-buttons .owl-next:hover:after,
+					.camera_wrap .owl-controls .owl-buttons .owl-prev:hover:after {
+						-webkit-transform: rotate(360deg);
+						-moz-transform: rotate(360deg);
+					}
+				
+				.camera_wrap:hover .owl-controls .owl-buttons .owl-prev,
+				.camera_wrap:hover .owl-controls .owl-buttons .owl-next {
+					display: block;
+				}
+					
+					.camera_wrap .owl-controls .owl-buttons .owl-prev:hover:before,
+					.camera_wrap .owl-controls .owl-buttons .owl-next:hover:before {
+						opacity: 1;
+					}
+			
+		.camera_wrap .owl-controls .owl-pagination {
+			position: absolute;
+			bottom: 0;
+			text-align: center;
+			width: 100%;
+			padding: 0px;
+		}
+		
+			.camera_wrap .owl-controls .owl-pagination .owl-page {
+				display: inline-block;
+			}
+			
+				.camera_wrap .owl-controls .owl-pagination span {
+					cursor: pointer;
+					margin: 0px 5px 17px 5px;
+					width: 10px;
+					height: 10px;
+					padding: 0px;
+					background: #babcbe;
+					transition:         all 0.4s;
+					-o-transition:      all 0.4s;
+					-ms-transition:     all 0.4s;
+					-moz-transition:    all 0.4s;
+					-webkit-transition: all 0.4s;
+					display: block;
+				}
+				
+					.camera_wrap .owl-controls .owl-pagination .active span {
+						background: #494b56;
+					}

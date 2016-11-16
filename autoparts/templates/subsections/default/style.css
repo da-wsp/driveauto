@@ -1,0 +1,34 @@
+.rsecs{
+	background-position:top center;
+	width:240px; margin-right:24px; padding:100px 0px 10px 0px;
+	background-color:#ffffff; background-repeat:no-repeat; 
+	border:1px solid #ffffff; -moz-border-radius:6px; -webkit-border-radius:6px; border-radius:6px;
+	-moz-box-shadow:2px 2px 8px rgba(0,0,0,0.4); -webkit-box-shadow:2px 2px 8px rgba(0,0,0,0.4); box-shadow:2px 2px 8px rgba(0,0,0,0.4);
+}
+.rseclinks a{display:block; padding:4px 15px 4px 15px;}
+.rseclinks a:hover{text-decoration:none; font-weight:bold; color:#ffffff; text-shadow:1px 1px 1px #2E2E2E;
+	background: -webkit-gradient(linear, center top, center bottom, from(#b9b9b9), to(#949494));
+	background-image: linear-gradient(#b9b9b9, #949494);
+}
+.rseclinks span{font-size:20px;}
+
+.rsactive{font-weight:bold;}
+
+#subsections a{color:#0057A3;}
+#subsections a:hover{color:#CC6D00; text-decoration:none;}
+#subsections .shead{font-weight:bold; font-size:16px; font-family:Calibri;
+background: -webkit-gradient(linear, center top, center bottom, from(#fff), to(#b9b9b9));
+	background-image: linear-gradient(#fff, #b9b9b9);
+	border-radius:6px; box-shadow:inset 0 0 0 1px #ffffff;
+}
+#subsections .rtlink{margin-left:18px;}
+.sbody{padding:5px 0px 20px 55px!important;}
+.sbody a{display:block;}
+.sbody a:hover{}
+.levl2{margin-top:15px;}
+.levl3{padding:3px 0px 3px 30px!important;}
+.levl3 a{display:inline-block!important;}
+
+.movedsec{background:url('images/moved.jpg'); width:16px; height:16px; display:inline-block;}
+
+.ignored_admin_note{margin:0px 0px 10px 0px; color:#ff0000;}

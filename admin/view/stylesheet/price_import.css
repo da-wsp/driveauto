@@ -1,0 +1,53 @@
+/*
+    Document   : price_import
+    Created on : 12.09.2013, 17:42:37
+    Author     : root
+    Description: Purpose of the stylesheet follows.
+*/
+
+table.setup_cell {
+    width: 55%;
+}
+table.setup_cell td {
+    text-align: center;
+}
+table.setup_cell td:first-child {
+    text-align: left;
+}
+
+span.tooltip {
+    position: relative;
+    font-family: tahoma, arial;
+    font-size: 90%;
+    cursor: pointer;
+}
+span.tooltip span {
+    display: none;
+}
+span.tooltip:hover span {
+    display: block;
+    position: absolute;
+    min-width: 200px;
+    min-height: 40px;
+    top: 1.2em;
+    left: 2.2em;
+    background: #ffff66 url('../image/price_import/R2D2.png') no-repeat center left;
+    padding: 0.2em 0.6em;
+    padding-left: 45px;
+    border: 1px solid #996633;
+    color: #000;
+}
+
+.button_input {
+    background: #003A88;
+    border-radius: 10px;
+    color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+    padding: 5px 15px;
+    text-decoration: none;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    -moz-border-radius: 10px 10px 10px 10px;
+    -khtml-border-radius: 10px 10px 10px 10px;
+    border-radius: 10px 10px 10px 10px;
+}

@@ -1,0 +1,842 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<modification>
+	<name>Ajax advanced search</name>
+	<version>1.0</version>
+	
+	<author>Punit kumar</author>
+		<!--Catalog starts-->
+		<file name="catalog/model/catalog/product.php">
+		<operation error="log">
+			<search position="before"><![CDATA[
+				public function getProducts($data = array()) {
+			]]></search>
+			<add><![CDATA[				
+				/**
+					*Ajax advanced search starts
+					*/
+				public function ajaxLiveSearch($data=array()) {	
+					if ($this->customer->isLogged()) {
+						$customer_group_id = $this->customer->getCustomerGroupId();
+					} else {
+						$customer_group_id = $this->config->get('config_customer_group_id');
+					}	
+
+					$sql = "SELECT p.product_id, (SELECT AVG(rating) AS total FROM " . DB_PREFIX . "review r1 WHERE r1.product_id = p.product_id AND r1.status = '1' GROUP BY r1.product_id) AS rating, (SELECT price FROM " . DB_PREFIX . "product_discount pd2 WHERE pd2.product_id = p.product_id AND pd2.customer_group_id = '" . (int)$customer_group_id . "' AND pd2.quantity = '1' AND ((pd2.date_start = '0000-00-00' OR pd2.date_start < NOW()) AND (pd2.date_end = '0000-00-00' OR pd2.date_end > NOW())) ORDER BY pd2.priority ASC, pd2.price ASC LIMIT 1) AS discount, (SELECT price FROM " . DB_PREFIX . "product_special ps WHERE ps.product_id = p.product_id AND ps.customer_group_id = '" . (int)$customer_group_id . "' AND ((ps.date_start = '0000-00-00' OR ps.date_start < NOW()) AND (ps.date_end = '0000-00-00' OR ps.date_end > NOW())) ORDER BY ps.priority ASC, ps.price ASC LIMIT 1) AS special"; 
+
+					if (!empty($data['filter_category_id'])) {
+						if (!empty($data['filter_sub_category'])) {
+							$sql .= " FROM " . DB_PREFIX . "category_path cp LEFT JOIN " . DB_PREFIX . "product_to_category p2c ON (cp.category_id = p2c.category_id)";			
+						} else {
+							$sql .= " FROM " . DB_PREFIX . "product_to_category p2c";
+						}
+
+						if (!empty($data['filter_filter'])) {
+							$sql .= " LEFT JOIN " . DB_PREFIX . "product_filter pf ON (p2c.product_id = pf.product_id) LEFT JOIN " . DB_PREFIX . "product p ON (pf.product_id = p.product_id)";
+						} else {
+							$sql .= " LEFT JOIN " . DB_PREFIX . "product p ON (p2c.product_id = p.product_id)";
+						}
+					} else {
+						$sql .= " FROM " . DB_PREFIX . "product p";
+					}
+
+					$sql .= " LEFT JOIN " . DB_PREFIX . "product_description pd ON (p.product_id = pd.product_id) LEFT JOIN " . DB_PREFIX . "product_to_store p2s ON (p.product_id = p2s.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "' AND p.status = '1' AND p.date_available <= NOW() AND p2s.store_id = '" . (int)$this->config->get('config_store_id') . "'";
+
+					if (!empty($data['filter_category_id'])) {
+						if (!empty($data['filter_sub_category'])) {
+							$sql .= " AND cp.path_id = '" . (int)$data['filter_category_id'] . "'";	
+						} else {
+							$sql .= " AND p2c.category_id = '" . (int)$data['filter_category_id'] . "'";			
+						}	
+
+						if (!empty($data['filter_filter'])) {
+							$implode = array();
+
+							$filters = explode(',', $data['filter_filter']);
+
+							foreach ($filters as $filter_id) {
+								$implode[] = (int)$filter_id;
+							}
+
+							$sql .= " AND pf.filter_id IN (" . implode(',', $implode) . ")";				
+						}
+					}	
+
+					if (!empty($data['filter_name']) || !empty($data['filter_tag'])) {
+						$sql .= " AND (";
+
+						if (!empty($data['filter_name'])) {
+							$implode = array();
+
+							$words = explode(' ', trim(preg_replace('/\s\s+/', ' ', $data['filter_name'])));
+
+							foreach ($words as $word) {
+								$implode[] = "LCASE(pd.name) LIKE '%" . $this->db->escape($word) . "%'";
+							}
+
+							if ($implode) {
+								$sql .= " " . implode(" AND ", $implode) . "";
+							}
+
+							if (!empty($data['filter_description'])) {
+								$sql .= " OR pd.description LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+							}
+						}
+
+						if (!empty($data['filter_name']) && !empty($data['filter_tag'])) {
+							$sql .= " OR ";
+						}
+
+						if (!empty($data['filter_tag'])) {
+							$sql .= "pd.tag LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+						}
+
+						if (!empty($data['filter_model'])) {
+							$sql .= " OR LCASE(p.model) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}
+
+						if (!empty($data['filter_sku'])) {
+							$sql .= " OR LCASE(p.sku) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}	
+
+						if (!empty($data['filter_upc'])) {
+							$sql .= " OR LCASE(p.upc) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}		
+
+						if (!empty($data['filter_ean'])) {
+							$sql .= " OR LCASE(p.ean) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}
+
+						if (!empty($data['filter_jan'])) {
+							$sql .= " OR LCASE(p.jan) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}
+
+						if (!empty($data['filter_isbn'])) {
+							$sql .= " OR LCASE(p.isbn) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}		
+
+						if (!empty($data['filter_mpn'])) {
+							$sql .= " OR LCASE(p.mpn) LIKE '" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%'";
+						}
+						
+						if (!empty($data['filter_manufacturer'])) {
+							$sql .= " OR p.manufacturer_id IN (SELECT manufacturer_id from ".DB_PREFIX."manufacturer WHERE `name` LIKE '%" . $this->db->escape(utf8_strtolower($data['filter_name'])) . "%')";
+						}
+						
+						$sql .= ")";
+					}
+
+					if (!empty($data['filter_manufacturer_id'])) {
+						$sql .= " AND p.manufacturer_id = '" . (int)$data['filter_manufacturer_id'] . "'";
+					}
+
+					$sql .= " GROUP BY p.product_id";
+
+					$sort_data = array(
+						'pd.name',
+						'p.model',
+						'p.quantity',
+						'p.price',
+						'rating',
+						'p.sort_order',
+						'p.date_added'
+					);	
+
+					if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+						if ($data['sort'] == 'pd.name' || $data['sort'] == 'p.model') {
+							$sql .= " ORDER BY LCASE(" . $data['sort'] . ")";
+						} elseif ($data['sort'] == 'p.price') {
+							$sql .= " ORDER BY (CASE WHEN special IS NOT NULL THEN special WHEN discount IS NOT NULL THEN discount ELSE p.price END)";
+						} else {
+							$sql .= " ORDER BY " . $data['sort'];
+						}
+					} else {
+						$sql .= " ORDER BY p.sort_order";	
+					}
+
+					if (isset($data['order']) && ($data['order'] == 'DESC')) {
+						$sql .= " DESC, LCASE(pd.name) DESC";
+					} else {
+						$sql .= " ASC, LCASE(pd.name) ASC";
+					}
+
+					if (isset($data['start']) || isset($data['limit'])) {
+						if ($data['start'] < 0) {
+							$data['start'] = 0;
+						}				
+
+						if ($data['limit'] < 1) {
+							$data['limit'] = 10; // set default limit if empty in admin then 10
+						}	
+
+						$sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+					}
+					$product_data = array();
+
+					$query = $this->db->query($sql);
+
+					foreach ($query->rows as $result) {
+						$product_data[$result['product_id']] = $this->getProduct($result['product_id']);						
+					}
+					
+					return $product_data;
+				}
+				/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/language/*/common/header.php">
+		<operation error="log">
+			<search position="after"><![CDATA[
+				// Text
+			]]></search>
+			<add><![CDATA[				
+				/**
+					*Ajax advanced search starts
+					*/
+				$_['ajaxadvancedsearch_model'] = 'Model :'; 
+				$_['ajaxadvancedsearch_manufacturer'] = 'Manufacturer :'; 
+				$_['ajaxadvancedsearch_price'] = 'Price :'; 
+				$_['ajaxadvancedsearch_stock'] = 'Stock :'; 
+				$_['ajaxadvancedsearch_rating'] = 'Rating :';
+					/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/common/header.php">
+		<operation error="log">
+			<search position="after"><![CDATA[
+				protected function index() {
+			]]></search>
+			<add><![CDATA[				
+				/**
+					*Ajax advanced search starts
+					*/
+					$this->language->load('common/header');
+					$this->data['ajaxadvancedsearch_model'] = $this->language->get('ajaxadvancedsearch_model');
+					$this->data['ajaxadvancedsearch_manufacturer'] = $this->language->get('ajaxadvancedsearch_manufacturer');
+					$this->data['ajaxadvancedsearch_price'] = $this->language->get('ajaxadvancedsearch_price');
+					$this->data['ajaxadvancedsearch_stock'] = $this->language->get('ajaxadvancedsearch_stock');
+					$this->data['ajaxadvancedsearch_rating'] = $this->language->get('ajaxadvancedsearch_rating');
+					
+					$this->data['ajaxadvancesearch_imagewidth'] = 100;
+					$this->data['ajaxadvancesearch_imageheight'] = 100;
+					
+					$this->data['ajaxadvancesearch_status'] = false;
+					if($this->config->get('config_ajaxadvancedsearch')!='' && $this->config->get('config_ajaxadvancedsearch')==1){
+						$this->data['ajaxadvancesearch_status'] =  $this->config->get('config_ajaxadvancedsearch');
+					}
+					if($this->config->get('config_ajaxadvancedsearch_image_width')!=''){
+						$this->data['ajaxadvancesearch_imagewidth'] = $this->config->get('config_ajaxadvancedsearch_image_width');
+					}
+					if($this->config->get('config_ajaxadvancedsearch_image_height')!=''){
+						$this->data['ajaxadvancesearch_imageheight'] = $this->config->get('config_ajaxadvancedsearch_image_height');
+					}
+					/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/controller/common/header.php">
+		<operation error="log">
+			<search position="before"><![CDATA[
+				protected function index() {
+			]]></search>
+			<add><![CDATA[				
+				/**
+					*Ajax advanced search starts
+					*/
+				public function ajaxLiveSearch() {
+					$json = array();
+					if(!empty($this->request->get['filter_name'])){
+						$this->load->model('catalog/product');
+						$this->load->model('tool/image');
+						
+						$filter_mpn = ($this->config->get('config_ajaxadvancedsearch_mpn')) ? true : false;
+						$filter_manufacturer = ($this->config->get('config_ajaxadvancedsearch_manufacturer_search')) ? true : false;
+						$filter_isbn = ($this->config->get('config_ajaxadvancedsearch_isbn')) ? true : false;
+						$filter_jan = ($this->config->get('config_ajaxadvancedsearch_jan')) ? true : false;
+						$filter_ean = ($this->config->get('config_ajaxadvancedsearch_ean')) ? true : false;
+						$filter_upc = ($this->config->get('config_ajaxadvancedsearch_upc')) ? true : false;
+						$filter_sku = ($this->config->get('config_ajaxadvancedsearch_sku')) ? true : false;
+						$filter_model = ($this->config->get('config_ajaxadvancedsearch_model_search')) ? true : false;
+						$filter_tag = ($this->config->get('config_ajaxadvancedsearch_tag')) ? true : false;
+						
+						$filterdata=array(
+							'filter_name' => $this->request->get['filter_name'],
+							'filter_mpn' => $filter_mpn,
+							'filter_manufacturer' => $filter_manufacturer,
+							'filter_isbn' => $filter_isbn,
+							'filter_jan' => $filter_jan,
+							'filter_ean' => $filter_ean,
+							'filter_upc' => $filter_upc,
+							'filter_sku' => $filter_sku,
+							'filter_model' => $filter_model,
+							'filter_tag' => $filter_tag,
+							'start' => 0,
+							'limit' =>  ($this->config->get('config_ajaxadvancedsearch_limit')!=0) ? $this->config->get('config_ajaxadvancedsearch_limit') : 5,
+						);
+						$results = (array) $this->model_catalog_product->ajaxLiveSearch($filterdata);
+						foreach($results as $result){
+							$width = 100;
+							$height = 100;
+							if($this->config->get('config_ajaxadvancedsearch_image_width')!='' && $this->config->get('config_ajaxadvancedsearch_image_height')!=''){
+								$width = $this->config->get('config_ajaxadvancedsearch_image_width');
+								$height = $this->config->get('config_ajaxadvancedsearch_image_height');
+							}
+							if(!empty($result['image'])&&file_exists(DIR_IMAGE .$result['image'])){
+								$image = $this->model_tool_image->resize($result['image'],$width,$height);
+							}else if(file_exists(DIR_IMAGE .'data/logo.png')){
+								$image = $this->model_tool_image->resize('data/logo.png',$width,$height);
+							}else{	
+								$image = $this->model_tool_image->resize('no_image.jpg',$width,$height);
+							}
+							// no highlight
+							$highlight = false;							
+							if($this->config->get('config_ajaxadvancedsearch_highlight')!='' && $this->config->get('config_ajaxadvancedsearch_highlight')==1){
+								// seperate highlight
+								$highlight = 'seperate';
+							}else if($this->config->get('config_ajaxadvancedsearch_highlight')!='' && $this->config->get('config_ajaxadvancedsearch_highlight')==2){
+								// combine highlight
+								$highlight = 'combine';
+							}
+							$name='';
+							$model='';
+							$manufacturer='';
+							
+							if($highlight == 'seperate'){
+								$breakchars = array_map('strtolower',array_unique(str_split(html_entity_decode ($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'))));
+								foreach((array)str_split(html_entity_decode ($result['name'], ENT_QUOTES, 'UTF-8')) as $char){
+									if(in_array(strtolower(strtoupper($char)),$breakchars)){
+										$name.='<span class="highlight">'. htmlentities($char) .'</span>';
+									}else{
+										$name .= htmlentities($char);
+									}
+								}
+								foreach((array)str_split($result['model']) as $char){
+									if(in_array(strtolower(strtoupper($char)),$breakchars)){
+										$model.='<span class="highlight">'. $char .'</span>';
+									}else{
+										$model .= $char;
+									}
+								}
+								
+								foreach((array)str_split($result['manufacturer']) as $char){
+									if(in_array(strtolower(strtoupper($char)),$breakchars)){
+										$manufacturer.='<span class="highlight">'. $char .'</span>';
+									}else{
+										$manufacturer .= $char;
+									}
+								}
+							
+							}else if($highlight == 'combine'){
+								$breakchars = array();
+								$name=str_ireplace($this->request->get['filter_name'],'<span class="highlight">'. substr($result['name'],stripos($result['name'],$this->request->get['filter_name']),strlen($this->request->get['filter_name'])) .'</span>',$result['name']);
+								$model=str_ireplace($this->request->get['filter_name'],'<span class="highlight">'. substr($result['name'],stripos($result['name'],$this->request->get['filter_name']),strlen($this->request->get['filter_name'])) .'</span>',$result['model']);
+								$manufacturer=str_ireplace($this->request->get['filter_name'],'<span class="highlight">'. substr($result['name'],stripos($result['name'],$this->request->get['filter_name']),strlen($this->request->get['filter_name'])) .'</span>',$result['manufacturer']);
+							}else{
+								$breakchars = array();
+								$name=$result['name'];
+								$model=$result['model'];
+								$manufacturer=$result['manufacturer'];
+							}
+							
+							$json[] = array(
+								'product_id' => $result['product_id'],
+								'name' => $name,
+								'name1' => $result['name'],
+								'model' => ($this->config->get('config_ajaxadvancedsearch_model')) ? $model: false ,
+								'stock_status' =>  ($this->config->get('config_ajaxadvancedsearch_stock')) ?  $result['stock_status'] : false,
+								'image' => ($this->config->get('config_ajaxadvancedsearch_image')) ? $image : false,
+								'manufacturer' => ($this->config->get('config_ajaxadvancedsearch_manufacturer')) ?  $manufacturer : false,
+								'price' => ($this->config->get('config_ajaxadvancedsearch_price')) ? $this->currency->format($this->tax->calculate($result['price'], $result['tax_class_id'], $this->config->get('config_tax'))) : false,
+								'special' => ($this->config->get('config_ajaxadvancedsearch_price')) ? $result['special'] != 0.0000 ?  $this->currency->format($this->tax->calculate($result['special'], $result['tax_class_id'], $this->config->get('config_tax'))) : 0 : false,
+								'rating' => ($this->config->get('config_ajaxadvancedsearch_rating')) ? $result['rating'] : false,
+								'reviews' => $result['reviews'],
+							);
+						}
+					}
+
+					$this->response->setOutput(json_encode($json));
+				}
+				/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+	</file>
+	<file name="catalog/view/theme/*/template/common/header.tpl">
+		<operation error="log">
+			<search position="before"><![CDATA[
+				<div id="notification"></div>
+			]]></search>
+			<add><![CDATA[
+				<?php if($ajaxadvancesearch_status){ ?>
+				<!--
+				/**
+					*Ajax advanced search starts
+					*/
+				-->
+				<script type="text/javascript" language="javascript"><!--
+					// Ajax advanced search starts
+					$(document).ready(function(){
+						
+						$('input[name="search"]').autocomplete({
+							delay: 500,
+							source: function(request, response) {
+								$.ajax({
+									url: 'index.php?route=common/header/ajaxLiveSearch&filter_name=' +  encodeURIComponent(request.term),
+									dataType: 'json',
+									success: function(json) {
+										response($.map(json, function(item) {
+											return {
+												label: item.name,
+												name: item.name1,
+												value: item.product_id,
+												model: item.model,
+												stock_status: item.stock_status,
+												image: item.image,
+												manufacturer: item.manufacturer,
+												price: item.price,
+												special: item.special,
+												category: item.category,
+												rating: item.rating,
+												reviews: item.reviews,
+											}
+										}));
+									}
+								});
+							}, 
+							select: function(event, ui) {
+								if(ui.item.value){
+									location = 'index.php?route=product/product/&product_id='+ui.item.value;
+								}else{
+									$('.button-search').trigger('click');
+								}
+								return false;
+							},
+							focus: function(event, ui) {
+								return false;
+							}
+						}).data("autocomplete")._renderItem = function(ul, item){
+								var html = '<div id="ajaxadvance">';
+									if(item.product_id!=0){
+										html += '<div class="image">';
+										if(item.image){
+										html += '<img title="'+item.name+'" src="'+item.image+'"/>';
+										}
+										html += '</div>';
+										html += '<div class="content">';
+										html += 	'<h3 class="name">'+item.label+'</h3>';
+										if(item.model){
+										html += 	'<div class="model">';
+										html +=		'<?php echo $ajaxadvancedsearch_model; ?> '+ item.model;
+										html +=		'</div>';
+										}
+										if(item.manufacturer){
+										html += 	'<div class="manufacturer">';
+										html +=		'<?php echo $ajaxadvancedsearch_manufacturer; ?> '+ item.manufacturer;			
+										html +=		'</div>';		
+										}
+										if(item.price){
+										html += 	'<div class="price"> <?php echo $ajaxadvancedsearch_price; ?> ';
+											if (!item.special) { 
+										html +=			 item.price;
+											} else {	
+										html +=			'<span class="price-old">'+ item.price +'</span> <span class="price-new">'+ item.special +'</span>';
+											}	
+										html +=		'</div>';
+										}
+										if(item.stock_status){
+										html += 	'<div class="stock_status">';
+										html +=		'<?php echo $ajaxadvancedsearch_stock; ?> '+ item.stock_status;			
+										html +=		'</div>';
+										}
+										if (item.rating) {
+										html +=		'<div class="rating"> <?php echo $ajaxadvancedsearch_rating; ?> <img src="catalog/view/theme/default/image/stars-'+ item.rating+ '.png" alt="'+ item. reviews +'" /></div>';
+										}
+										html +='</div>';
+									}
+								html += '</div>';
+								return $('<li></li>')
+									 .data('item.autocomplete', item)
+									 .append('<a>' + html + '</a>')
+									 .appendTo(ul);
+						};
+					});
+					//Ajax advanced search ends
+				//--></script>
+				<style>
+				.ui-menu {z-index: 666 !important; background: #fff; }
+				.ui-menu li:nth-child(even){background: #FFFFFF;  border: 1px solid #dbdee1;}
+				.ui-menu li:nth-child(odd){background: #E4EEF7;  border: 1px solid #fff;}
+				.ui-menu li, .ui-menu .ui-menu-item { margin-bottom: 10px;}
+				.ui-menu a {border-radius: 0 ;}
+				#ajaxadvance { display:inline-flex; }
+				#ajaxadvance .name { margin:0; }
+				#ajaxadvance .image { display:inline-block; float: left;	margin-right:10px; width: <?php echo $ajaxadvancesearch_imagewidth;?>px;}
+				#ajaxadvance .content { display:inline-block; max-width: 300px;}
+				#ajaxadvance .content > div { margin-top:5px;	}
+				#ajaxadvance .price-old {color: #ff0000; text-decoration: line-through; }
+				#ajaxadvance .highlight {color: #38b0e3; }
+				</style>
+				<!--
+				/**
+					*Ajax advanced search ends
+					*/
+				-->
+				<?php } ?>
+			]]></add>
+		</operation>
+	</file>
+	<!--Catalog ends-->
+	<!--Admin starts-->
+	<file name="admin/language/*/setting/setting.php">
+		<operation error="log">
+			<search position="after"><![CDATA[
+				$_['heading_title']
+			]]></search>
+			<add><![CDATA[
+				/**
+					*Ajax advanced search starts
+					*/
+				$_['tab_ajaxadvancedsearch'] = 'Ajax Advanced Search';
+				$_['text_ajaxadvancedsearch'] = 'Ajax Advanced Search';
+				$_['text_display_image'] = 'Show image in result ';
+				$_['text_ajaxadvancedsearch_limit'] = 'Limit result to show <br/><span class="help">Default limit is 5</span>';
+				$_['text_imagesize'] = 'Image size in Width X Height (50 X 50) <br/><span class="help">Default image width height is 100 X 100</span>';
+				$_['text_display_model'] = 'Show model in result';
+				$_['text_display_manufacturer'] = 'Show manufacturer in result';
+				$_['text_display_price'] = 'Show price in result';
+				$_['text_display_rating'] = 'Show rating in result';
+				$_['text_display_stock'] = 'Show stock in result';
+				$_['text_search_model'] = 'Search model for result';
+				$_['text_search_tag'] = 'Search tag for result';
+				$_['text_search_mpn'] = 'Search mpn for result';
+				$_['text_search_manufacturer'] = 'Search manufacturer for result';
+				$_['text_search_isbn'] = 'Search isbn for result';
+				$_['text_search_jan'] = 'Search jan for result';
+				$_['text_search_ean'] = 'Search ean for result';
+				$_['text_search_upc'] = 'Search upc for result';
+				$_['text_search_sku'] = 'Search sku for result';
+				$_['text_highlight'] = 'Hightlight Search keywords';
+				$_['text_highlight_sepeate'] = 'Seperate';
+				$_['text_highlight_combine'] = 'Combine';
+				$_['text_highlight_no'] = 'No Hightlight';
+				$_['text_imagewidth'] = 'Width: &nbsp;';
+				$_['text_imageheight'] = 'Height: &nbsp;';
+				$_['error_config_ajaxadvancedsearch_image'] = 'Please keep height width between %s and %s .';
+				/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/controller/setting/setting.php">
+		<operation error="log">
+			<search position="before"><![CDATA[
+				if (!$this->request->post['config_name']) {
+			]]></search>
+			<add><![CDATA[
+				/**
+					*Ajax advanced search starts
+					*/
+				if (($this->request->post['config_ajaxadvancedsearch_image_width'] < 25 || $this->request->post['config_ajaxadvancedsearch_image_width'] > 100) || ($this->request->post['config_ajaxadvancedsearch_image_height'] < 25 || $this->request->post['config_ajaxadvancedsearch_image_height'] > 100)) {
+					$this->error['config_ajaxadvancedsearch_image'] = sprintf( $this->language->get('error_config_ajaxadvancedsearch_image'),25,100);
+				}			
+				/**
+				*Ajax advanced search ends
+				*/
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="after"><![CDATA[
+				$this->data['tab_server']
+			]]></search>
+			<add><![CDATA[
+				/**
+					*Ajax advanced search starts
+					*/
+				$this->data['tab_ajaxadvancedsearch'] = $this->language->get('tab_ajaxadvancedsearch');
+				$this->data['text_ajaxadvancedsearch'] = $this->language->get('text_ajaxadvancedsearch');
+				$this->data['text_display_image'] = $this->language->get('text_display_image');
+				$this->data['text_ajaxadvancedsearch_limit'] = $this->language->get('text_ajaxadvancedsearch_limit');
+				$this->data['text_display_model'] = $this->language->get('text_display_model');
+				$this->data['text_display_manufacturer'] = $this->language->get('text_display_manufacturer');
+				$this->data['text_display_price'] = $this->language->get('text_display_price');
+				$this->data['text_display_rating'] = $this->language->get('text_display_rating');
+				$this->data['text_display_stock'] = $this->language->get('text_display_stock');
+				$this->data['text_search_model'] = $this->language->get('text_search_model');
+				$this->data['text_search_tag'] = $this->language->get('text_search_tag');
+				$this->data['text_search_mpn'] = $this->language->get('text_search_mpn');
+				$this->data['text_search_manufacturer'] = $this->language->get('text_search_manufacturer');
+				$this->data['text_search_isbn'] = $this->language->get('text_search_isbn');
+				$this->data['text_search_jan'] = $this->language->get('text_search_jan');
+				$this->data['text_search_ean'] = $this->language->get('text_search_ean');
+				$this->data['text_search_upc'] = $this->language->get('text_search_upc');
+				$this->data['text_search_sku'] = $this->language->get('text_search_sku');
+				$this->data['text_highlight'] = $this->language->get('text_highlight');
+				$this->data['text_highlight_sepeate'] = $this->language->get('text_highlight_sepeate');
+				$this->data['text_highlight_combine'] = $this->language->get('text_highlight_combine');
+				$this->data['text_highlight_no'] = $this->language->get('text_highlight_no');
+				$this->data['text_enabled'] = $this->language->get('text_enabled');
+				$this->data['text_disabled'] = $this->language->get('text_disabled');
+				$this->data['text_imagesize'] = $this->language->get('text_imagesize');
+				$this->data['text_imagewidth'] = $this->language->get('text_imagewidth');
+				$this->data['text_imageheight'] = $this->language->get('text_imageheight');
+				if (isset($this->error['config_ajaxadvancedsearch_image'])) {
+					$this->data['error_config_ajaxadvancedsearch_image'] = $this->error['config_ajaxadvancedsearch_image'];
+				} else {
+					$this->data['error_config_ajaxadvancedsearch_image'] = '';
+				}
+				/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+		<operation>
+		<search position="before"><![CDATA[
+				if (isset($this->request->post['config_google_analytics'])) {
+			]]></search>
+			<add><![CDATA[
+				/**
+					*Ajax advanced search starts
+					*/
+					if (isset($this->request->post['config_ajaxadvancedsearch'])) {
+						$this->data['config_ajaxadvancedsearch'] = $this->request->post['config_ajaxadvancedsearch']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch'] = $this->config->get('config_ajaxadvancedsearch');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_limit'])) {
+						$this->data['config_ajaxadvancedsearch_limit'] = $this->request->post['config_ajaxadvancedsearch_limit']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_limit'] = $this->config->get('config_ajaxadvancedsearch_limit');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_image'])) {
+						$this->data['config_ajaxadvancedsearch_image'] = $this->request->post['config_ajaxadvancedsearch_image']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_image'] = $this->config->get('config_ajaxadvancedsearch_image');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_image_width'])) {
+						$this->data['config_ajaxadvancedsearch_image_width'] = $this->request->post['config_ajaxadvancedsearch_image_width']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_image_width'] = $this->config->get('config_ajaxadvancedsearch_image_width');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_image_height'])) {
+						$this->data['config_ajaxadvancedsearch_image_height'] = $this->request->post['config_ajaxadvancedsearch_image_height']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_image_height'] = $this->config->get('config_ajaxadvancedsearch_image_height');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_model'])) {
+						$this->data['config_ajaxadvancedsearch_model'] = $this->request->post['config_ajaxadvancedsearch_model']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_model'] = $this->config->get('config_ajaxadvancedsearch_model');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_manufacturer'])) {
+						$this->data['config_ajaxadvancedsearch_manufacturer'] = $this->request->post['config_ajaxadvancedsearch_manufacturer']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_manufacturer'] = $this->config->get('config_ajaxadvancedsearch_manufacturer');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_price'])) {
+						$this->data['config_ajaxadvancedsearch_price'] = $this->request->post['config_ajaxadvancedsearch_price']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_price'] = $this->config->get('config_ajaxadvancedsearch_price');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_rating'])) {
+						$this->data['config_ajaxadvancedsearch_rating'] = $this->request->post['config_ajaxadvancedsearch_rating']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_rating'] = $this->config->get('config_ajaxadvancedsearch_rating');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_stock'])) {
+						$this->data['config_ajaxadvancedsearch_stock'] = $this->request->post['config_ajaxadvancedsearch_stock']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_stock'] = $this->config->get('config_ajaxadvancedsearch_stock');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_model_search'])) {
+						$this->data['config_ajaxadvancedsearch_model_search'] = $this->request->post['config_ajaxadvancedsearch_model_search']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_model_search'] = $this->config->get('config_ajaxadvancedsearch_model_search');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_tag'])) {
+						$this->data['config_ajaxadvancedsearch_tag'] = $this->request->post['config_ajaxadvancedsearch_tag']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_tag'] = $this->config->get('config_ajaxadvancedsearch_tag');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_mpn'])) {
+						$this->data['config_ajaxadvancedsearch_mpn'] = $this->request->post['config_ajaxadvancedsearch_mpn']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_mpn'] = $this->config->get('config_ajaxadvancedsearch_mpn');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_manufacturer_search'])) {
+						$this->data['config_ajaxadvancedsearch_manufacturer_search'] = $this->request->post['config_ajaxadvancedsearch_manufacturer_search']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_manufacturer_search'] = $this->config->get('config_ajaxadvancedsearch_manufacturer_search');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_isbn'])) {
+						$this->data['config_ajaxadvancedsearch_isbn'] = $this->request->post['config_ajaxadvancedsearch_isbn']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_isbn'] = $this->config->get('config_ajaxadvancedsearch_isbn');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_jan'])) {
+						$this->data['config_ajaxadvancedsearch_jan'] = $this->request->post['config_ajaxadvancedsearch_jan']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_jan'] = $this->config->get('config_ajaxadvancedsearch_jan');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_ean'])) {
+						$this->data['config_ajaxadvancedsearch_ean'] = $this->request->post['config_ajaxadvancedsearch_ean']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_ean'] = $this->config->get('config_ajaxadvancedsearch_ean');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_upc'])) {
+						$this->data['config_ajaxadvancedsearch_upc'] = $this->request->post['config_ajaxadvancedsearch_upc']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_upc'] = $this->config->get('config_ajaxadvancedsearch_upc');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_sku'])) {
+						$this->data['config_ajaxadvancedsearch_sku'] = $this->request->post['config_ajaxadvancedsearch_sku']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_sku'] = $this->config->get('config_ajaxadvancedsearch_sku');
+					}
+					if (isset($this->request->post['config_ajaxadvancedsearch_highlight'])) {
+						$this->data['config_ajaxadvancedsearch_highlight'] = $this->request->post['config_ajaxadvancedsearch_highlight']; 
+					} else {
+						$this->data['config_ajaxadvancedsearch_highlight'] = $this->config->get('config_ajaxadvancedsearch_highlight');
+					}
+					
+				/**
+					*Ajax advanced search ends
+					*/
+			]]></add>
+		</operation>
+	</file>
+	<file name="admin/view/template/setting/setting.tpl">
+		<operation error="log">
+			<search position="replace"><![CDATA[
+				<a href="#tab-server"><?php echo $tab_server; ?></a>
+			]]></search>
+			<add><![CDATA[
+				<!--
+				/**
+					*Ajax advanced search starts
+					*/
+				-->
+				<a href="#tab-server"><?php echo $tab_server; ?></a>
+				<a href="#tab-ajaxadvancedsearch"><?php echo $tab_ajaxadvancedsearch; ?></a>
+				<!--	
+				/**
+					*Ajax advanced search ends
+					*/
+				-->	
+			]]></add>
+		</operation>
+		<operation error="log">
+			<search position="before"><![CDATA[
+				</form>
+			]]></search>
+			<add><![CDATA[
+				<!--
+				/**
+					*Ajax advanced search starts
+					*/
+				-->	
+				<div id="tab-ajaxadvancedsearch">
+					<?php $chk = 'checked="checked"';?>
+					<table class="form">
+						<tbody>
+						<tr>
+							<td><?php echo $text_ajaxadvancedsearch; ?></td>
+							<td><label for="config_ajaxadvancedsearch-1"><input type="radio" name="config_ajaxadvancedsearch" value="1" <?php if($config_ajaxadvancedsearch==1){echo $chk;}?> /> <?php echo $text_enabled; ?></label><label for="config_ajaxadvancedsearch-0"><input type="radio" name="config_ajaxadvancedsearch" value="0" <?php if($config_ajaxadvancedsearch==0 || !$config_ajaxadvancedsearch){echo $chk;}?> /> <?php echo $text_disabled; ?></label></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_ajaxadvancedsearch_limit; ?></td>
+							<td><input type="text" name="config_ajaxadvancedsearch_limit" value="<?php echo $config_ajaxadvancedsearch_limit; ?>" /> </td>
+						</tr>
+						<tr>
+							<td><?php echo $text_display_image; ?></td>
+							<td><label for="config_ajaxadvancedsearch_image-1"><input type="radio" name="config_ajaxadvancedsearch_image" value="1" <?php if($config_ajaxadvancedsearch_image==1){echo $chk;}?> /> <?php echo $text_yes; ?></label><label for="config_ajaxadvancedsearch_image-0"><input type="radio" name="config_ajaxadvancedsearch_image" value="0" <?php if($config_ajaxadvancedsearch_image==0 || !$config_ajaxadvancedsearch_image){echo $chk;}?> /> <?php echo $text_no; ?></label></td>
+						</tr>
+						<tr>
+							<td><span class="required">*</span> <?php echo $text_imagesize; ?></td>
+							<td> <?php echo $text_imagewidth; ?><input type="text" name="config_ajaxadvancedsearch_image_width" value="<?php echo $config_ajaxadvancedsearch_image_width; ?>" size="10" /> <?php echo $text_imageheight; ?><input type="text" name="config_ajaxadvancedsearch_image_height" value="<?php echo $config_ajaxadvancedsearch_image_height; ?>" size="10" />
+							<?php if ($error_config_ajaxadvancedsearch_image) { ?>
+							<div class="error"><?php echo $error_config_ajaxadvancedsearch_image; ?></div>
+							<?php } ?>
+							</td>
+						</tr>
+						<tr>
+							<td><?php echo $text_display_model; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_model" value="1" <?php if($config_ajaxadvancedsearch_model==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_model" value="0" <?php if($config_ajaxadvancedsearch_model==0 || !$config_ajaxadvancedsearch_model){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_display_manufacturer; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_manufacturer" value="1" <?php if($config_ajaxadvancedsearch_manufacturer==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_manufacturer" value="0" <?php if($config_ajaxadvancedsearch_manufacturer==0 || !$config_ajaxadvancedsearch_manufacturer){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_display_price; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_price" value="1" <?php if($config_ajaxadvancedsearch_price==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_price" value="0" <?php if($config_ajaxadvancedsearch_price==0 || !$config_ajaxadvancedsearch_price){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_display_rating; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_rating" value="1" <?php if($config_ajaxadvancedsearch_rating==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_rating" value="0" <?php if($config_ajaxadvancedsearch_rating==0 || !$config_ajaxadvancedsearch_rating){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_display_stock; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_stock" value="1" <?php if($config_ajaxadvancedsearch_stock==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_stock" value="0" <?php if($config_ajaxadvancedsearch_stock==0 || !$config_ajaxadvancedsearch_stock){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_model; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_model_search" value="1" <?php if($config_ajaxadvancedsearch_model_search==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_model_search" value="0" <?php if($config_ajaxadvancedsearch_model_search==0 || !$config_ajaxadvancedsearch_model_search){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_tag; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_tag" value="1" <?php if($config_ajaxadvancedsearch_tag==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_tag" value="0" <?php if($config_ajaxadvancedsearch_tag==0 || !$config_ajaxadvancedsearch_tag){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_mpn; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_mpn" value="1" <?php if($config_ajaxadvancedsearch_mpn==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_mpn" value="0" <?php if($config_ajaxadvancedsearch_mpn==0 || !$config_ajaxadvancedsearch_mpn){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_manufacturer; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_manufacturer_search" value="1" <?php if($config_ajaxadvancedsearch_manufacturer_search==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_manufacturer_search" value="0" <?php if($config_ajaxadvancedsearch_manufacturer_search==0 || !$config_ajaxadvancedsearch_manufacturer_search){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_isbn; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_isbn" value="1" <?php if($config_ajaxadvancedsearch_isbn==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_isbn" value="0" <?php if($config_ajaxadvancedsearch_isbn==0 || !$config_ajaxadvancedsearch_isbn){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_jan; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_jan" value="1" <?php if($config_ajaxadvancedsearch_jan==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_jan" value="0" <?php if($config_ajaxadvancedsearch_jan==0 || !$config_ajaxadvancedsearch_jan){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_ean; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_ean" value="1" <?php if($config_ajaxadvancedsearch_ean==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_ean" value="0" <?php if($config_ajaxadvancedsearch_ean==0 || !$config_ajaxadvancedsearch_ean){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_upc; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_upc" value="1" <?php if($config_ajaxadvancedsearch_upc==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_upc" value="0" <?php if($config_ajaxadvancedsearch_upc==0 || !$config_ajaxadvancedsearch_upc){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_search_sku; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_sku" value="1" <?php if($config_ajaxadvancedsearch_sku==1){echo $chk;}?> /><?php echo $text_yes; ?><input type="radio" name="config_ajaxadvancedsearch_sku" value="0" <?php if($config_ajaxadvancedsearch_sku==0 || !$config_ajaxadvancedsearch_sku){echo $chk;}?> /> <?php echo $text_no; ?></td>
+						</tr>
+						<tr>
+							<td><?php echo $text_highlight; ?></td>
+							<td><input type="radio" name="config_ajaxadvancedsearch_highlight" value="1" <?php if($config_ajaxadvancedsearch_highlight==1){echo $chk;}?> /><?php echo $text_highlight_sepeate; ?><input type="radio" name="config_ajaxadvancedsearch_highlight" value="2" <?php if($config_ajaxadvancedsearch_highlight==2){echo $chk;}?> /><?php echo $text_highlight_combine; ?><input type="radio" name="config_ajaxadvancedsearch_highlight" value="0" <?php if($config_ajaxadvancedsearch_highlight==0 || !$config_ajaxadvancedsearch_highlight){echo $chk;}?> /><?php echo $text_highlight_no; ?></td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+				<!--
+				/**
+					*Ajax advanced search ends
+					*/
+				-->	
+			]]></add>
+		</operation>
+	</file>
+	<!--Admin ends-->
+</modification>

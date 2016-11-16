@@ -1,0 +1,23 @@
+/* Apmin side */
+body{height:100%; background:url(images/bgr.png); background-attachment:fixed;}
+.tdm_acontent{
+	width:1100px; min-height:400px;
+	font-family:Verdana; font-size:12px;
+	margin:10px auto 20px auto !important;  padding:10px 20px 30px 20px !important; 
+	position:relative; display:block!important; 
+	background:#f2f2f2 url(images/topfon.png) left top repeat-x; 
+	border:1px solid #ffffff; -moz-border-radius:10px; -webkit-border-radius:10px; border-radius:10px;
+	-moz-box-shadow:2px 2px 8px rgba(0,0,0,0.4); -webkit-box-shadow:2px 2px 8px rgba(0,0,0,0.4); box-shadow:2px 2px 8px rgba(0,0,0,0.4);
+}
+.tdm_acontent a{color:#0086a7; text-decoration:none;}
+.tdm_acontent h1{font-family:Calibri!important; display:inline-block; color:#585858!important; font-weight:bold; font-size:20px!important; text-shadow:0px 0px 2px #ffffff; margin-bottom:12px; }
+.tdm_acontent hr{padding:0px; margin:6px 0px 18px 0px!important; color:#ffffff; height:1px; background:#ffffff; border-bottom:1px solid #c3c3c3; border-top:0px; border-left:0px; border-right:0px;}
+.bt-save{color:#ffffff; text-shadow:1px 1px 2px #000000; font-size:16px; font-family:Arial!important; line-height:38px; background:url(images/bt-save.png); padding-left:20px; width:135px; height:43px; }
+.bt-save:hover{cursor:pointer; background-position:-155px 0px;}
+.bt-download{color:#ffffff; text-shadow:1px 1px 2px #000000; font-size:16px; font-family:Arial!important; line-height:38px; background:url(images/bt-download.png); padding-left:20px; width:135px; height:43px; }
+.bt-download:hover{cursor:pointer; background-position:-155px 0px;}
+.ft-box{width:220px; height:300px; border:solid 1px #BBB; background:#FFF; overflow:auto; padding:5px; margin-bottom:8px;}
+.tdmhelp{display:inline-block; width:16px; height:16px; background:url(images/info.png); padding:0px;}
+.flmang{display:inline-block; width:16px; height:16px; background:url(images/flmang.png); padding:0px;}
+.imlog{padding:3px 0px 3px 20px;  background:url(images/bglog.png); color:#ffffff; text-shadow:1px 1px 1px #000000;}
+.imlog b{color:#faaa8e;}

@@ -1,0 +1,52 @@
+2016-03-30 10:15:33 - PHP Notice:  Undefined variable: search in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/view/theme/my-theme/template/common/home.tpl on line 73
+2016-03-30 10:15:33 - PHP Notice:  Undefined variable: text_search in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/view/theme/my-theme/template/common/home.tpl on line 73
+2016-03-30 10:31:16 - PHP Warning:  Illegal string offset 'search' in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/view/theme/my-theme/template/common/home.tpl on line 47
+2016-03-30 10:31:16 - PHP Warning:  Illegal string offset 'text_search' in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/view/theme/my-theme/template/common/home.tpl on line 47
+2016-04-02 5:59:37 - PHP Warning:  unlink(/var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/admin/../system/storage/cache/cache.currency.1459568345): No such file or directory in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/cache/file.php on line 17
+2016-04-02 5:59:37 - PHP Warning:  session_start(): Cannot send session cookie - headers already sent by (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/admin/index.php:80) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/session.php on line 21
+2016-04-02 5:59:37 - PHP Warning:  session_start(): Cannot send session cache limiter - headers already sent (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/admin/index.php:80) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/session.php on line 21
+2016-04-02 5:59:37 - PHP Warning:  Cannot modify header information - headers already sent by (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/admin/index.php:80) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/currency.php on line 45
+2016-05-14 18:10:21 - PHP Warning:  unlink(/var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/storage/cache/cache.currency.1463122028): No such file or directory in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/cache/file.php on line 17
+2016-05-14 18:10:21 - PHP Warning:  session_start(): Cannot send session cookie - headers already sent by (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/index.php:98) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/session.php on line 21
+2016-05-14 18:10:21 - PHP Warning:  session_start(): Cannot send session cache limiter - headers already sent (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/index.php:98) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/session.php on line 21
+2016-05-14 18:10:21 - PHP Warning:  Cannot modify header information - headers already sent by (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/index.php:98) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/index.php on line 185
+2016-05-14 18:10:21 - PHP Warning:  Cannot modify header information - headers already sent by (output started at /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/index.php:98) in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/system/library/currency.php on line 45
+2016-11-01 8:50:45 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:50:48 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:13 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:20 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:26 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:29 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:30 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:31 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:32 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:35 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:39 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:40 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:40 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 8:51:45 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-01 12:53:41 - PHP Notice:  Undefined index: cart_id in /var/www/cdda-ws15137/data/www/test2.da-wsp.com.ua/catalog/controller/common/cart.php on line 100
+2016-11-02 10:23:47 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:23:47 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:23:58 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:23:58 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:47:29 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:47:29 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:47:50 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:47:50 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:48:46 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:48:46 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:48:54 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:48:54 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:49:52 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:49:52 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:49:56 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-02 10:49:56 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:12:07 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:12:07 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:27:18 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:27:18 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:27:36 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:27:36 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:55:50 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45
+2016-11-04 13:55:50 - PHP Notice:  Undefined index: search in Z:\home\test2\www\catalog\view\theme\my-theme\template\common\home.tpl on line 45

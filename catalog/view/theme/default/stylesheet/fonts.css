@@ -1,0 +1,40 @@
+/* font-family: "MyriadProRegular"; */
+@font-face {
+    font-family: "MyriadProRegular";
+    src: url("catalog/view/theme/my-theme/fonts/MyriadProRegular/MyriadProRegular.eot");
+    src: url("catalog/view/theme/my-theme/fonts/MyriadProRegular/MyriadProRegular.eot?#iefix")format("embedded-opentype"),
+    url("catalog/view/theme/my-theme/fonts/MyriadProRegular/MyriadProRegular.woff") format("woff"),
+    url("catalog/view/theme/my-theme/fonts/MyriadProRegular/MyriadProRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "OpenSansRegular"; */
+@font-face {
+    font-family: "OpenSansRegular";
+    src: url("catalog/view/theme/my-theme/fonts/OpenSansRegular/OpenSansRegular.eot");
+    src: url("catalog/view/theme/my-theme/fonts/OpenSansRegular/OpenSansRegular.eot?#iefix")format("embedded-opentype"),
+    url("catalog/view/theme/my-theme/fonts/OpenSansRegular/OpenSansRegular.woff") format("woff"),
+    url("catalog/view/theme/my-theme/fonts/OpenSansRegular/OpenSansRegular.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "MyriadProBold"; */
+@font-face {
+    font-family: "MyriadProBold";
+    src: url("catalog/view/theme/my-theme/fonts/MyriadProBold/MyriadProBold.eot");
+    src: url("catalog/view/theme/my-theme/fonts/MyriadProBold/MyriadProBold.eot?#iefix")format("embedded-opentype"),
+    url("catalog/view/theme/my-theme/fonts/MyriadProBold/MyriadProBold.woff") format("woff"),
+    url("catalog/view/theme/my-theme/fonts/MyriadProBold/MyriadProBold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
+/* font-family: "OpenSansLight"; */
+@font-face {
+    font-family: "OpenSansLight";
+    src: url("catalog/view/theme/my-theme/fonts/OpenSansLight/OpenSansLight.eot");
+    src: url("catalog/view/theme/my-theme/fonts/OpenSansLight/OpenSansLight.eot?#iefix")format("embedded-opentype"),
+    url("catalog/view/theme/my-theme/fonts/OpenSansLight/OpenSansLight.woff") format("woff"),
+    url("catalog/view/theme/my-theme/fonts/OpenSansLight/OpenSansLight.ttf") format("truetype");
+    font-style: normal;
+    font-weight: normal;
+}
